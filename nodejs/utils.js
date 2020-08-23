@@ -23,8 +23,8 @@ exports.mySleep = function(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
 }
 
-exports.getMostVoted = function(arr,callback){
-	console.log('votes : ' , arr);
+exports.getMostVoted = function(arr,gameId,callback){
+	console.log('game ' + gameId + ' : votes : ' , arr);
 	var maxIndex = 0;
 	var maxValue = 0;
 	for (var i = 0; i < arr.length; i++) {

@@ -7,7 +7,7 @@ exports.addUser = function(con,u,callback) {
 	u,
 	function (err, result) {
         if (err) throw err;
-    	console.log("user joined");
+    	//console.log("user joined");
     	var id = result.insertId;
     	return callback(id)
     });
@@ -36,7 +36,7 @@ exports.createGame = function(con,u,callback) {
 	u,
 	function (err, result) {
         if (err) throw err;
-    	console.log("game created, ID: " + result.insertId);
+    	//console.log("game created, ID: " + result.insertId);
     	var id = result.insertId;
     	return callback(id)
     });
@@ -101,7 +101,7 @@ exports.sendRequest = function(con, nameReceiver, friend, callback) {
 									friend,
 									function (err, result3) {
 										if (err) throw err;
-								    	console.log("friend request sent with id : " + result3.insertId);
+								    	console.log("friend request to " + nameReceiver);
 								    	var id = result3.insertId;
 								    	return callback({error:false, id:id, idReceiver:friend.idReceiver});
 								    });
@@ -239,7 +239,6 @@ exports.loadChatMessages = function(con,id,callback) {
 
 
 
-
 exports.createGroup = function(con,m,callback) {
 	con.query("SELECT * FROM groups WHERE name = '" + m.name + "'", function (err, result) {
 	    if (err) throw err;
@@ -265,21 +264,83 @@ exports.createGroup = function(con,m,callback) {
 	});
 }
 
-exports.loadGroups = function(con,id,callback) {
+/*exports.loadGroups = function(con,id,callback) {
 	var groups = [];
-	con.query("SELECT * FROM groups" ,
+	con.query("SELECT * FROM members WHERE idUser = " + id ,
 	    function (err, result){
 	    if (err) throw err;	
+	    console.log('user ' + id + ' has ' + result.length + ' groups');
 	    for (var i = 0; i < result.length; i++) {
-	    	con.query("SELECT * FROM members WHERE idUser = " + id ,
+	    	con.query("SELECT * FROM groups WHERE id = " + result[i].idGroup ,
 			    function (err, result2){
 			    if (err) throw err;
-			    if (result2.length == 1) {
-			    	groups.push(result[i]);
-				}
+			    //console.log(result2)
+			    //return callback(result2);
+			    groups[i] = result2;
+			    console.log("i:" + i + " l:" + result.length);
+			    if (i == result.length -1) {
+			    	console.log(groups.length);
+			    	return callback(groups);
+			    }
 			});	
-	    }	
-	    return callback(result);	
+	    }
+	    //return callback(groups);
+	});
+}*/
+
+exports.randomAdmin = function(con,id,callback) {
+	con.query("SELECT * FROM members WHERE idGroup = " + id,
+		function (err, result) {
+			if (err) {throw err};
+			var newAdmin = result[0];
+			newAdmin.isAdmin = 1;
+			con.query("UPDATE members SET ? WHERE idGroup = " + id + " AND idUser = " + newAdmin.idUser, 
+				newAdmin,
+				function (err, result) {
+			        if (err) throw err;
+			    	//console.log("game created, ID: " + result.insertId);
+			    	//var id = result.insertId;
+			    	con.query("UPDATE groups SET ? WHERE id = " + id , 
+						{"idAdmin":newAdmin.idUser},
+						function (err, result) {
+					        if (err) throw err;
+					    	//console.log("game created, ID: " + result.insertId);
+					    	//var id = result.insertId;
+					    	return callback(newAdmin.idUser);
+					    });
+			    });
+		});
+}
+
+exports.deleteGroup = function(con,id,callback) {
+	con.query("DELETE FROM groups WHERE id = " + id, 
+		function (err, result) {
+			if (err) {throw err;}
+
+			con.query("DELETE FROM members WHERE idGroup = " + id,
+				function (err, result) {
+					if (err) {throw err;}
+
+				con.query("DELETE FROM groupmessages WHERE idGroup = " + id,
+					function (err, result) {
+						if (err) {throw err;}
+
+						return callback();
+					})
+					
+				})
+		});
+}
+
+exports.loadGroups = function(con,id,callback) {
+	var groups = [];
+	con.query("SELECT members.idGroup, groups.name, groups.idAdmin, groups.nameAdmin, groups.numMembers " +
+	 "FROM members INNER JOIN groups ON members.idGroup = groups.id WHERE members.idUser = " + id,
+	    function (err, result){
+	    if (err) throw err;	
+	    //console.log('user ' + id + ' has ' + result.length + ' groups');
+	    //console.log(result);
+	    return callback(result);
 	});
 }
 
@@ -289,6 +350,7 @@ exports.addMember = function(con,m,callback) {
 	    if (err) throw err;
 	    //console.log(result);
 	    if (result.length > 0) {
+	    	console.log(result);
 	    	return callback({error:true, state:1});
 	    }else{
 		    con.query("INSERT INTO members SET ?", 
@@ -298,6 +360,8 @@ exports.addMember = function(con,m,callback) {
 		    	var id = result.insertId;
 		    	m.id = id;
 		    	m.error = false;
+		    	if (!m.isAdmin) 
+		    		console.log('user ' + m.idUser + ' was added to group ' + m.idGroup);
 		    	return callback(m)
 		    });
 		}
@@ -310,9 +374,36 @@ exports.addMember = function(con,m,callback) {
 
 
 
+exports.updateNumMembers = function(con,groupId,newNum,callback) {
+	con.query("UPDATE groups SET ? WHERE id = " + groupId , 
+	{"numMembers":newNum},
+	function (err, result) {
+        if (err) throw err;
+    	//console.log("game created, ID: " + result.insertId);
+    	//var id = result.insertId;
+    	return callback()
+    });
+}
 
+exports.updateName = function(con,groupId,newName,callback) {
+	con.query("UPDATE groups SET ? WHERE id = " + groupId , 
+	{"name":newName},
+	function (err, result) {
+        if (err) throw err;
+    	//console.log("game created, ID: " + result.insertId);
+    	//var id = result.insertId;
+    	return callback()
+    });
+}
 
-
+exports.deleteMember = function(con,groupId,id,callback) {
+	con.query("DELETE FROM members WHERE idUser = " + id + " AND idGroup = " + groupId,
+	    function (err, result){
+	    if (err) throw err;		
+	    //console.log(result);
+	    return callback(result);	
+	});
+}
 
 exports.loadMembers = function(con,id,callback) {
 	con.query("SELECT * FROM members WHERE idGroup = " + id ,
@@ -331,6 +422,15 @@ exports.loadAllGroups = function(con,callback) {
 	});
 }
 
+exports.deleteGames = function(con,callback) {
+	con.query("DELETE FROM games WHERE finished = 0",
+	    function (err, result){
+	    if (err) throw err;		
+	    //console.log(result);
+	    return callback(result);	
+	});
+}
+
 
 
 
@@ -340,6 +440,16 @@ exports.loadAllGroups = function(con,callback) {
 
 
 exports.addGroupMessage = function(con,m,callback) {
+    con.query("INSERT INTO groupmessages SET ?", 
+	m,
+	function (err, result) {
+        if (err) throw err;
+    	var id = result.insertId;
+    	return callback(id)
+    });
+}
+
+exports.addInfoGroupMessage = function(con,m,callback) {
     con.query("INSERT INTO groupmessages SET ?", 
 	m,
 	function (err, result) {

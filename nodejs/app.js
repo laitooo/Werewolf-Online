@@ -7,13 +7,14 @@ var gameSocket = require('./gameSocket');
 var chatSocket = require('./chatSocket');
 var groupSocket = require('./groupSocket');
 var imagesManager = require('./imagesManager');
+var moment = require('moment');
 const path = require('path');
 
 app = express();
 server = http.createServer(app);
 io = require('socket.io').listen(server);
 
-const hostname ='192.168.43.210'
+const hostname ='192.168.43.211'
 //const hostname = '0.0.0.0';
 const port = 3001;
 
@@ -44,7 +45,8 @@ app.post('/addUser', function(req, res) {
 	api.isUserExists(con, req.body.email, req.body.username, function(result){
 		if(result.length == 0){
 	    	api.addUser(con,req.body, function(userId){
-	    		imagesManager.randomProfile(userId,function(imageFile){
+	    		imagesManager.randomProfile(userId,req.body.username,function(imageFile){
+	    			console.log(req.body.username + ' : signed up');
 	    			res.json({ error: false, id: userId, pic:imageFile});
 	    		});
 	    	});
@@ -55,11 +57,11 @@ app.post('/addUser', function(req, res) {
 });
 
 app.post('/isUser', function(req,res) {
-	console.log(req.body);
+	//console.log(req.body);
 	api.userExists(con,req.body.email,req.body.username,function(result){
 		if(result.length == 1){
 			if (result[0].password == req.body.password) {
-				console.log('user logged');
+				console.log(req.body.username + ' : logged in');
 				res.json({error:false,user:result[0]});
 			}else{
 				res.json({error:true,state:2})
@@ -90,38 +92,25 @@ app.post('/addFriend', function(req, res) {
 	});
 });*/
 
-
-api.loadAllFriends(con, function(result) {
-	for (var i=0;i<result.length;i++){
-		chatSocket.createSocket(con,result[i].id);
-	}
-});
-
-api.loadAllGroups(con, function(result) {
-	for (var i=0;i<result.length;i++){
-		groupSocket.createSocket(con,result[i].id);
-	}
-});
-
-
 var nsp = io.of('/games')
+var num = 0; 
 nsp.on('connection', function (socket) {
 
 	socket.on('join', function(userNickname) {
-		console.log(userNickname +" : has logged in "  );
-		var num_online = socket.client.conn.server.clientsCount;
-	    socket.broadcast.emit('num_players',num_online);
-	    socket.emit('num_players',num_online);
+		console.log(userNickname +" : online "  );
+		num = num + 1;
+		console.log("Num onine : " + num);
+	    socket.broadcast.emit('num_players',num);
+	    socket.emit('num_players',num);
 	    api.loadActiveGames(con,function(Result){
 	    	socket.emit('load_games',Result);
 	    });
-	    
 	})
 
 	socket.on('createGame', function(game) {
 		api.createGame(con,game,function(id){
 			game.id = id;
-			console.log(game.nameOwner + " : has created new game "  );
+			console.log(game.nameOwner + " : has created game " + id);
 	    	socket.emit('youCreatedGame',game);
 	    	socket.broadcast.emit('gameCreated',game);
 	    	gameSocket.createSocket(con,game,socket);
@@ -129,8 +118,12 @@ nsp.on('connection', function (socket) {
 	})
 
 	socket.on('disconnect', function() {
-	    var num_online = socket.client.conn.server.clientsCount;
-	    socket.broadcast.emit('num_players',num_online);
+	    num = num - 1;
+	    if (num < 0) {
+	    	num = 0;
+	    }
+	    console.log("Num onine : " + num);
+	    socket.broadcast.emit('num_players',num);
 	})
 
 });
@@ -197,57 +190,55 @@ nsp3.on('connection', function (socket) {
 		 {idAdmin:idAdmin, nameAdmin:nameAdmin, name:groupName, numMembers:1},
 		 function(result) {
 		 	if (!result.error) {
-				console.log(nameAdmin + ' created group : ' + groupName);
+				let messageTime = moment().format('YYYY-MM-DD HH:mm')
+				let content = nameAdmin + ' : created this group';
+				api.addInfoGroupMessage(con, 
+				{idGroup:result.id, userName:"", userId:0, content:content, time:messageTime, info:true},
+				function(id) {
+					console.log(nameAdmin + ' : created group ( ' + groupName + ' )');
+				});
 			}
 			socket.emit('groupCreated',result);
-			chatSocket.createSocket(con,result.id);
+			groupSocket.createSocket(con,groupName,result.id,result.numMembers);
 		});
 	});
 
+	socket.on('refresh', function(id) {
+		api.loadGroups(con,id,function(Result){
+	    	socket.emit('reloadGroups',Result);
+	    });
+	})
+
 });
+
+
+api.loadAllGroups(con, function(result) {
+	for (var i=0;i<result.length;i++){
+		groupSocket.createSocket(con,result[i].name,result[i].id,result[i].numMembers);
+			//console.log(result[i]);
+	}
+	console.log('groups sockets started');
+});			
+
+api.loadAllFriends(con, function(result) {
+	for (var i=0;i<result.length;i++){
+		chatSocket.createSocket(con,result[i].id);
+	}
+	console.log('chats sockets started');
+});
+
+api.deleteGames(con, function(result) {
+	console.log('deleted unfinished games');
+});
+
 
 
 /*app.post('/uploadImage', upload.single('image'), async function (req, res) {
   await console.log('image uploaded');
 });*/
 
-
-app.post('/loadGroupMembers', function(req, res) {
-	api.loadMembers(con,req.body.id,function(result){
-		//console.log(result);
-	  	if (result.length < 1) {
-	  		res.json({error:true, state:1});
-	  	}else{
-	  		res.json(result);
-	  	}
-	});
-});
-
-app.post('/loadFriends', function(req, res) {
-	api.loadFriends(con,req.body.id,function(Result){
-		    res.json(Result);
-	});
-});
-
-app.post('/addMembers', function(req, res) {
-	var arr = JSON.parse(req.body.param);
-	console.log(arr);
-	var response = [];
-	for (var i = 0; i < arr.length; i++) {
-		api.addMember(con,
-			{idGroup:arr[i].groupId, idUser:arr[i].userId, nameUser:arr[i].userName, isAdmin:0},
-			function(m) {
-			console.log(m);
-			response[i] = m;
-		});
-	}
-	res.json(response);
-});
-
-
-
-
-
 server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+  console.log(`Warewolf started`);
+  console.log(`server url : http://${hostname}:${port}/`);
+  console.log("started at " + moment().format('YYYY-MM-DD HH:mm Z'));
 });
