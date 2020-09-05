@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color3">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="210dp"
+                android:id="@+id/appbar"
+                android:background="@color/color1">
+
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/back"
+                    android:background="@color/transparent"
+                    android:tint="@color/color3"
+                    android:src="@android:drawable/ic_menu_close_clear_cancel"
+                    android:layout_marginLeft="10dp"/>
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:id="@+id/icon"
+                    android:src="@drawable/logo2"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Warewolf Online"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:textStyle="bold"
+                    android:textSize="25dp"
+                    android:textColor="@color/color3"
+                    android:id="@+id/name"
+                    android:layout_below="@+id/icon"/>
+
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/add"
+                    android:background="@color/transparent"
+                    android:tint="@color/color3"
+                    android:src="@android:drawable/ic_input_add"
+                    android:layout_alignParentRight="true"/>
+
+                <ImageButton
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:id="@+id/rename"
+                    android:background="@color/transparent"
+                    android:tint="@color/color3"
+                    android:src="@android:drawable/ic_menu_edit"
+                    android:layout_alignBottom="@+id/name"
+                    android:layout_marginRight="10dp"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recycler_members"
+                android:layout_below="@+id/appbar"/>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

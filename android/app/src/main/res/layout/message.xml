@@ -1,0 +1,50 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_marginTop="1dp"
+    android:layout_marginBottom="1dp"
+    android:background="@color/color8"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/line"
+        android:background="@color/color7"/>
+
+    <TextView
+        android:id="@+id/nickname"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:text="Nickname : "
+        android:textColor="@color/color1"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@id/message"
+        android:textSize="18dp"
+        android:text=" message "
+        android:layout_toRightOf="@+id/nickname"
+        android:layout_toLeftOf="@+id/tick"
+        android:layout_marginRight="5dp"
+        android:textColor="@color/color4"
+        android:layout_marginLeft="10dp"
+        android:layout_below="@+id/line"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ImageButton
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="@color/transparent"
+        android:id="@+id/tick"
+        android:src="@drawable/icon_wait"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:tint="@color/color4"
+        />
+
+</RelativeLayout>

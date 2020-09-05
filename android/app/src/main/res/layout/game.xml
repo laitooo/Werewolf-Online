@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/game_background">
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:id="@+id/game_icon"
+        android:padding="1dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/game_info"
+        android:textSize="16dp"
+        android:textColor="@color/color4"
+        android:layout_marginTop="5dp"
+        android:layout_alignTop="@+id/game_icon"
+        android:layout_toRightOf="@+id/game_icon"
+        />
+
+    <Button
+        android:layout_width="80dp"
+        android:layout_height="35dp"
+        android:id="@+id/join"
+        android:layout_below="@+id/game_info"
+        android:layout_alignLeft="@+id/game_info"
+        android:layout_marginTop="5dp"
+        android:text="Join"
+        android:textColor="@color/color3"
+        android:background="@drawable/game_button_background"
+        android:textSize="20dp"
+        android:textStyle="bold"/>
+
+</RelativeLayout>

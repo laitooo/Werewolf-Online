@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:background="@color/color3">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/text_vote"
+        android:text="What do you want to use"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/color1"
+        android:textStyle="bold"
+        android:textSize="22dp"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/linear"
+        android:layout_below="@id/text_vote"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/exir">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/exir"
+                android:id="@+id/icon_exir"
+                app:civ_border_color="@color/color2"
+                app:civ_border_width="4dp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/icon_exir"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:text="Exir"
+                android:textColor="@color/color1"
+                android:textSize="20dp"/>
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="0dp"
+            android:id="@+id/view_mid"/>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/poison">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/poison"
+                android:id="@+id/icon_poison"
+                app:civ_border_width="4dp"
+                app:civ_border_color="@color/color2"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/icon_poison"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:text="Poison"
+                android:textColor="@color/color1"
+                android:textSize="20dp"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/vote"
+        android:text="Use"
+        android:textColor="@color/color3"
+        android:textSize="20dp"
+        android:background="@drawable/game_button_background"
+        android:layout_below="@+id/linear"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"/>
+</RelativeLayout>

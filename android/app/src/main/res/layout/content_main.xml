@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color3"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/appbar"
+        android:background="@color/color3">
+
+        <ImageButton
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/toogle"
+            android:background="#00000000"
+            android:tint="@color/color1"
+            android:src="@drawable/icon_nav"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Warewolf Online"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dp"
+            android:textSize="28dp"
+            android:textColor="@color/color1"
+            android:layout_toRightOf="@+id/toogle"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/num_online"
+            android:textColor="@color/color1"
+            android:layout_centerVertical="true"
+            android:textSize="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            />
+    </RelativeLayout>
+
+    <android.support.design.widget.TabLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_below="@+id/appbar"
+        android:background="@color/color3"
+        app:tabTextColor="@color/color6"
+        app:tabIndicatorColor="@color/color1"
+        app:tabSelectedTextColor="@color/color1"
+        app:tabIndicatorHeight="3dp"
+        android:id="@+id/tabs_main" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:background="@color/color6"
+        android:id="@+id/line"
+        android:layout_alignBottom="@+id/tabs_main"/>
+
+    <android.support.v4.view.ViewPager
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/tabs_main"
+        android:id="@+id/view_pager_main"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:id="@+id/connection_status"
+        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:background="@color/yellow"
+        android:text="Connecting"
+        android:layout_below="@+id/line"
+        android:textColor="@color/black"/>
+
+</RelativeLayout>

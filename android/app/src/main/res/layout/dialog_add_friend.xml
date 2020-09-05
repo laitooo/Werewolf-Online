@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color3"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/title"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/color1"
+        android:textSize="22dp"
+        android:textStyle="bold"
+        android:text="Adding Friend"
+        android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:id="@+id/id_friend"
+        android:layout_below="@+id/title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:hint="Friend's name"
+        android:paddingLeft="20dp"
+        android:background="@drawable/field_backgroun"
+        android:textColorHint="@color/color1"
+        android:textColor="@color/color1"
+        android:textSize="20dp"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/add"
+        android:textColor="@color/color3"
+        android:text="Add"
+        android:textSize="20dp"
+        android:background="@drawable/game_button_background"
+        android:layout_below="@+id/id_friend"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"/>
+
+</RelativeLayout>

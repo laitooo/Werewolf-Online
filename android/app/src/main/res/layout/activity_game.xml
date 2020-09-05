@@ -1,0 +1,118 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/background"
+    android:background="@color/color3"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/appbar"
+        android:background="@color/color1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Waiting for players"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:textSize="25dp"
+            android:id="@+id/status"
+            android:textColor="@color/color3"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/timer"
+            android:textColor="@color/color3"
+            android:layout_centerVertical="true"
+            android:textSize="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/appbar"
+        android:layout_above="@+id/layout"
+        android:id="@+id/recycler_players"/>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/black_screen"
+        android:layout_below="@+id/appbar"
+        android:background="@color/color7"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/messagelist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/appbar"
+        android:layout_above="@+id/layout"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/layout"
+        android:paddingBottom="5dp"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/message"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:hint="your message"
+            android:textColor="@color/color1"
+            android:textColorHint="@color/color1"
+            android:paddingLeft="20dp"
+            android:textSize="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/game_message_background"/>
+
+        <ImageButton
+            android:id="@+id/send"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/icon_send"
+            android:tint="@color/color3"
+            android:background="@drawable/game_message_button"
+            />
+    </LinearLayout>
+
+    <View
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:id="@+id/newMessages"
+        android:background="@drawable/notification_game_message"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="22dp"
+        android:layout_marginRight="85dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:id="@+id/connection_status"
+        android:gravity="center_horizontal"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:text="Connecting...."
+        android:layout_below="@+id/appbar"
+        android:textColor="@color/black"/>
+
+
+</RelativeLayout>

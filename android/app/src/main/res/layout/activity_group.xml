@@ -1,0 +1,88 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color3"
+    tools:context="zxc.laitooo.warewolfonline.activities.ChatActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/appbar"
+        android:background="@color/color1">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:id="@+id/pic"
+            android:background="@color/transparent"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Warewolf Online"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:textSize="25dp"
+            android:textColor="@color/color3"
+            android:id="@+id/name"
+            android:layout_toRightOf="@+id/pic"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/messagelist"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:layout_below="@+id/appbar"
+        android:layout_above="@+id/messageLayout"
+        android:scrollbars="vertical"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/messageLayout"
+        android:layout_alignParentBottom="true">
+
+        <EditText
+            android:id="@+id/message"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:hint="your message"
+            android:textColor="@color/color1"
+            android:textColorHint="@color/color1"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="20dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/message_background"/>
+
+        <ImageButton
+            android:id="@+id/send"
+            android:layout_width="80dp"
+            android:layout_height="60dp"
+            android:src="@drawable/icon_send"
+            android:tint="@color/color3"
+            android:background="@drawable/game_button_background"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:id="@+id/connection_status"
+        android:gravity="center_horizontal"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:text="Connecting...."
+        android:layout_below="@+id/appbar"
+        android:textColor="@color/black"/>
+
+</RelativeLayout>

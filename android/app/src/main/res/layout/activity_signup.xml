@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_splash"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color3">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            >
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:id="@+id/title"
+                android:src="@drawable/logo3"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"/>
+
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="60dp"
+                android:hint="Email"
+                android:layout_below="@id/title"
+                android:textColorHint="@color/color1"
+                android:textSize="20dp"
+                android:background="@drawable/field_backgroun"
+                android:inputType="textEmailAddress"
+                android:paddingStart="20dp"
+                android:textColor="@color/color1"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:paddingLeft="20dp" />
+
+            <EditText
+                android:id="@+id/username"
+                android:layout_below="@+id/email"
+                android:hint="Username"
+                android:paddingRight="16dp"
+                android:paddingEnd="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp"
+                android:textColorHint="@color/color1"
+                android:textSize="20dp"
+                android:background="@drawable/field_backgroun"
+                android:inputType="textEmailAddress"
+                android:paddingStart="20dp"
+                android:textColor="@color/color1"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:paddingLeft="20dp" />
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="20dp"
+                android:textColorHint="@color/color1"
+                android:layout_below="@+id/username"
+                android:hint="Password"
+                android:textSize="20dp"
+                android:background="@drawable/field_backgroun"
+                android:inputType="textPassword"
+                android:paddingStart="20dp"
+                android:textColor="@color/color1"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:paddingLeft="20dp" />
+
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/country"
+                android:layout_below="@+id/password"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="40dp"
+                android:entries="@array/countries_array"
+                android:backgroundTint="@color/color1"
+                android:foregroundTint="@color/color1"
+                />
+
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:id="@+id/signup_button"
+                android:layout_centerHorizontal="true"
+                android:text="Sign Up"
+                android:textSize="20dp"
+                android:background="@drawable/button_backgroun"
+                android:layout_marginLeft="80dp"
+                android:layout_marginRight="80dp"
+                android:layout_below="@+id/country"
+                android:layout_marginTop="80dp"
+                android:textColor="@color/color3"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/signup"
+                android:text="Already have account?"
+                android:layout_below="@+id/signup_button"
+                android:textColor="@color/color1"
+                android:textSize="17dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="50dp"
+                />
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>

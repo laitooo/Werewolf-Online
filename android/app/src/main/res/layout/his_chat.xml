@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="50dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:id="@+id/layout"
+        android:background="@drawable/his_message_chat"
+        android:layout_alignParentLeft="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/linear">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:textSize="16dp"
+                android:breakStrategy="simple"
+                android:textColor="@color/color1"
+                android:id="@+id/content"
+                android:gravity="start"
+                android:paddingTop="5dp"
+                android:layout_margin="5dp"
+                />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/date"
+            android:textSize="12dp"
+            android:textColor="@color/color1"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
+            android:breakStrategy="simple"
+            android:paddingBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/linear"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

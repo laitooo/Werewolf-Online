@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color1">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="60dp"
+        android:background="@drawable/game_message_background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/color1"
+            android:textStyle="bold"
+            android:textSize="26dp"
+            android:layout_marginTop="60dp"
+            android:layout_centerHorizontal="true"
+            android:text="Warewolfs won the game"
+            android:id="@+id/winners"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/recycler_winners"
+            android:layout_above="@+id/ok"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/winners"/>
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:id="@+id/ok"
+            android:background="@drawable/button_backgroun"
+            android:elevation="10dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/color3"
+            android:text="Ok"
+            android:textSize="20dp"
+            android:textStyle="bold"/>
+
+    </RelativeLayout>
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/game_message_background"
+        android:src="@drawable/logo3"
+        android:elevation="5dp"/>
+
+</RelativeLayout>

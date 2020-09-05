@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/request_background">
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:id="@+id/image"
+        android:padding="1dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/name"
+        android:textSize="16dp"
+        android:textColor="@color/color4"
+        android:layout_marginTop="5dp"
+        android:layout_alignTop="@+id/image"
+        android:layout_toRightOf="@+id/image"
+        />
+
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:id="@+id/accept"
+        android:layout_below="@+id/name"
+        android:layout_alignLeft="@+id/name"
+        android:layout_marginTop="5dp"
+        android:tint="@color/color1"
+        android:background="@drawable/request_background"
+        android:src="@drawable/icon_checked"/>
+
+    <ImageButton
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:id="@+id/cancel"
+        android:layout_below="@+id/name"
+        android:layout_toRightOf="@+id/accept"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="5dp"
+        android:tint="@color/color1"
+        android:background="@drawable/request_background"
+        android:src="@drawable/icon_cancel"
+        />
+
+</RelativeLayout>
