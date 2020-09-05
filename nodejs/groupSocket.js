@@ -4,9 +4,8 @@ var moment = require('moment');
 
 
 
-exports.createSocket = function(con,groupName,groupId,numMembers){
+exports.createSocket = function(con,groupName,groupId,numMembers,nsp3){
 
-	var nsp3 = io.of('/groups')
 	var nsp = io.of('/groups/group' + groupId);
 	//console.log('group socket created with id : ' + groupId);
 

@@ -72,6 +72,17 @@ app.post('/isUser', function(req,res) {
 	});
 });
 
+app.post('/addReview', function(req,res) {
+	api.addReview(con,req.body,function(error){
+		if(!error){
+			console.log(req.body.username + ' : added a review (Version ' + req.body.version + ')');
+			res.json({error:false})
+		}else{
+			res.json({error:true})
+		}
+	});
+});
+
 
 /*app.post('/newGame', function(req, res) {
 	api.createGame(con,req.body,function(result){
@@ -92,9 +103,11 @@ app.post('/addFriend', function(req, res) {
 	});
 });*/
 
-var nsp = io.of('/games')
+var nsp = io.of('/main')
 var num = 0; 
 nsp.on('connection', function (socket) {
+
+	//    MAIN ACTIVITY
 
 	socket.on('join', function(userNickname) {
 		console.log(userNickname +" : online "  );
@@ -107,6 +120,17 @@ nsp.on('connection', function (socket) {
 	    });
 	})
 
+	socket.on('disconnect', function() {
+	    num = num - 1;
+	    if (num < 0) {
+	    	num = 0;
+	    }
+	    console.log("Num onine : " + num);
+	    socket.broadcast.emit('num_players',num);
+	})
+
+	//         GAMES SOCKET
+
 	socket.on('createGame', function(game) {
 		api.createGame(con,game,function(id){
 			game.id = id;
@@ -117,22 +141,9 @@ nsp.on('connection', function (socket) {
 		});
 	})
 
-	socket.on('disconnect', function() {
-	    num = num - 1;
-	    if (num < 0) {
-	    	num = 0;
-	    }
-	    console.log("Num onine : " + num);
-	    socket.broadcast.emit('num_players',num);
-	})
+	// 	         CHATS SOCKET
 
-});
-
-
-var nsp2 = io.of('/chats')
-nsp2.on('connection', function (socket) {
-
-	socket.on('join', function(id) {
+	socket.on('joinChats', function(id) {
 	    api.loadRequests(con,id,function(Result){
 	    	socket.emit('loadRequests',Result);
 	    });
@@ -162,7 +173,7 @@ nsp2.on('connection', function (socket) {
 			socket.emit('accepted',{error:false, idSender:idSender, id:id});
 			socket.broadcast.emit('requestAccepted',
 				{id:id, idSender:idSender, idReceiver:idReceiver, nameSender:nameSender, nameReceiver:nameReceiver});
-			chatSocket.createSocket(con,id);
+			chatSocket.createSocket(con,id,nsp);
 		});
 	});
 
@@ -172,14 +183,9 @@ nsp2.on('connection', function (socket) {
 		});
 	});
 
-});
+	//          GROUPS SOCKET
 
-
-
-var nsp3 = io.of('/groups')
-nsp3.on('connection', function (socket) {
-
-	socket.on('join', function(id) {
+	socket.on('joinGroups', function(id) {
 	    api.loadGroups(con,id,function(Result){
 	    	socket.emit('loadGroups',Result);
 	    });
@@ -199,7 +205,7 @@ nsp3.on('connection', function (socket) {
 				});
 			}
 			socket.emit('groupCreated',result);
-			groupSocket.createSocket(con,groupName,result.id,result.numMembers);
+			groupSocket.createSocket(con,groupName,result.id,result.numMembers,nsp);
 		});
 	});
 
@@ -212,9 +218,26 @@ nsp3.on('connection', function (socket) {
 });
 
 
+/*var nsp2 = io.of('/chats')
+nsp2.on('connection', function (socket) {
+
+	
+
+});
+
+
+
+var nsp3 = io.of('/groups')
+nsp3.on('connection', function (socket) {
+
+	
+
+});*/
+
+
 api.loadAllGroups(con, function(result) {
 	for (var i=0;i<result.length;i++){
-		groupSocket.createSocket(con,result[i].name,result[i].id,result[i].numMembers);
+		groupSocket.createSocket(con,result[i].name,result[i].id,result[i].numMembers,nsp);
 			//console.log(result[i]);
 	}
 	console.log('groups sockets started');
@@ -222,7 +245,7 @@ api.loadAllGroups(con, function(result) {
 
 api.loadAllFriends(con, function(result) {
 	for (var i=0;i<result.length;i++){
-		chatSocket.createSocket(con,result[i].id);
+		chatSocket.createSocket(con,result[i].id,nsp);
 	}
 	console.log('chats sockets started');
 });

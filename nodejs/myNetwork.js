@@ -29,7 +29,14 @@ exports.isUserExists = function(con,email,username,callback) {
 	});
 }
 
-
+exports.addReview = function(con,u,callback) {
+    con.query("INSERT INTO reviews SET ?", 
+	u,
+	function (err, result) {
+        if (err) throw err;
+    	return callback(false)
+    });
+}
 
 exports.createGame = function(con,u,callback) {
     con.query("INSERT INTO games SET ?", 
@@ -135,6 +142,32 @@ exports.addFriend = function(con,u,callback) {
     	console.log(u.name1 + " and " + u.name2 + " are now friends");
     	var id = result.insertId;
     	return callback(id)
+    });
+}
+
+exports.unfriend = function(con,u,callback) {
+    con.query("DELETE friends, chatmessages FROM friends LEFT JOIN chatmessages ON friends.id = chatmessages.idchat WHERE " + 
+    	"friends.id1 = " + u.id1 + " AND friends.id2 = " + u.id2, 
+	u,
+	function (err, result) {
+        if (err) throw err;
+        if (result.affectedRows > 0) {
+
+        	return callback(false);
+        }else{
+        	con.query("DELETE friends, chatmessages FROM friends LEFT JOIN chatmessages ON friends.id = chatmessages.idchat WHERE "
+        	 + "friends.id1 = " + u.id2 + " AND friends.id2 = " + u.id1, 
+			u,
+			function (err, result) {
+		        if (err) throw err;
+		        console.log(result);
+		        if (result.affectedRows > 0) {
+		        	return callback(false);
+		        }else{
+		        	return callback(true);
+		        }
+		    });
+        }
     });
 }
 

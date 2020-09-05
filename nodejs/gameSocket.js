@@ -39,10 +39,12 @@ const SERIAL_KILLER = 10;
 const ALPHA_WAREWOLF = 11;
 const TANNER = 12;
 const MAYOR = 13;
+const MAD_SCIENTIST = 14;
+const JUNIOR_WAREWOLF = 15;
 
-const ROLES_TEAMS = [0,2,1,1,1,1,1,1,1,1,3,2,3,1];
-const GOOD_TEAM = [2,3,4,5,6,7,8,9,13];
-const BAD_TEAM = [1,11];
+const ROLES_TEAMS = [0,2,1,1,1,1,1,1,1,1,3,2,3,1,1,2];
+const GOOD_TEAM = [2,3,4,5,6,7,8,9,13,14];
+const BAD_TEAM = [1,11,15];
 const OTHERS = [10,12];
 const TEAMS_NAME = ["ERROR","Villagers","Warewolfs","Serial killer","Tanner"];
 
@@ -138,6 +140,8 @@ randomRoles = function(a){
 }
 
 exports.createSocket = function(con,game,gamesSocket){
+	var playersVotes = [];
+	var playersEvents = [];
 	var gameId = game.id;
 	var numPlayer = 0;
 	var numAlive = 0;
@@ -146,8 +150,10 @@ exports.createSocket = function(con,game,gamesSocket){
 	var maxPlayer = game.max;
 	var isPlaying = false;
 	var isFinished = false;
+	var juniorDied = false;
 	var players = [];
 	var playerStates = [];
+	var wolfVotes = [];
 	var messages = [];
 	var votes = [];
 	var nightEvents = [];
@@ -158,7 +164,7 @@ exports.createSocket = function(con,game,gamesSocket){
 	var alphaWolf;
 	var state = STATE_DAY;
 	var exirUsed = false;	
-	var convertedtoAlpha = -1;
+	var convertedtoAlpha = -1;	
 
 
 	var nsp = io.of('/games/game' + gameId);
@@ -186,10 +192,10 @@ exports.createSocket = function(con,game,gamesSocket){
 				rejoinedPlayer(userId);
 			}else {
 				//console.log(userNickname +" : has joined the game "  );
-		    	socket.broadcast.emit('userJoinedTheGame',{user_name:userNickname,user_id:userId});
+		    	socket.broadcast.emit('userJoinedTheGame',{user_name:userNickname,user_id:userId, revealed:false});
 		    	numPlayer = numPlayer + 1;
 		    	players.push({userId:userId, userName:userNickname, online:true, order:(numPlayer-1),
-		    		role:0, alive:true});
+		    		role:0, alive:true, revealed:false});
 		    	numAlive = numAlive + 1;
 		    	socket.emit('num_players',numPlayer);
 		    	socket.broadcast.emit('num_players',numPlayer);
@@ -207,7 +213,7 @@ exports.createSocket = function(con,game,gamesSocket){
 		    if (numPlayer == maxPlayer && !isPlaying) {
 		    	isPlaying = true;
 		    	if (TESTING) {
-		    		roles = [GUNNER,MAYOR]
+		    		roles = [MAYOR,ALPHA_WAREWOLF]
 		    	}else {
 		    		roles = getRandomRoles(randomRoles(numPlayer));
 		    	}
@@ -224,7 +230,7 @@ exports.createSocket = function(con,game,gamesSocket){
 		    			isRevealed:false, numBullets:2, order:i});
 		    		}else if (roles[i] == MAYOR) {
 		    			mayors.push({id:players[i].userId, userName:players[i].userName,
-		    			isRevealed:false, order:i});
+		    			isRevealed:false, doubleVoted:false, order:i});
 		    		}else if (roles[i] == ALPHA_WAREWOLF) {
 		    			alphaWolf = {id:players[i].userId, userName:players[i].userName,
 		    			converted:false};
@@ -248,7 +254,8 @@ exports.createSocket = function(con,game,gamesSocket){
 			var userOrder = getPlayerOrder(players,userId);
 			players[userOrder].online = true;
 			socket.broadcast.emit('playerOnline',userOrder);
-			var obj = {state:state, order:userOrder, players:players, messages:messages, numPlayer:numPlayer};
+			var obj = {state:state, order:userOrder, players:players, messages:messages, numPlayer:numPlayer,
+			 juniorDied:juniorDied, playersVotes:playersVotes, playersEvents:playersEvents};
 			if (players[userOrder].role == DOCTOR) {
 				obj.doctors = doctors;
 			} else if (players[userOrder].role == WITCH) {
@@ -260,10 +267,18 @@ exports.createSocket = function(con,game,gamesSocket){
 			} else if (players[userOrder].role == ALPHA_WAREWOLF) {
 				obj.alphaWolf = alphaWolf;
 			}
+			console.log(playersVotes);
+			console.log(playersEvents);
 			socket.emit('youGotBack',obj);
 		}
 
 		const voteResult = function(){
+			for (var i = mayors.length - 1; i >= 0; i--) {
+				if (mayors[i].isRevealed){
+					mayors[i].doubleVoted = true;
+				}
+			}
+			playersVotes = [];
 			if (votes.length == 0) {
 				emptyRounds += 1;
 				//console.log("rounds : " + emptyRounds);
@@ -311,7 +326,9 @@ exports.createSocket = function(con,game,gamesSocket){
 		    			}else{
 		    				if (players[a.value].role == TANNER) {
 		    					tannerWon();
-		    				}else{
+		    				}else if (players[a.value].role == MAD_SCIENTIST) {
+		    					madScientistBomb(a.value);
+		    				}else {
 			    				numAlive = numAlive -1;
 			    				players[a.value].alive = false;
 			    				console.log('Game ' + gameId + " : " + players[a.value].userName + " is dead by voting");
@@ -328,6 +345,38 @@ exports.createSocket = function(con,game,gamesSocket){
 			    			}
 		    			}
 		    		});
+			}
+		}
+
+		const madScientistBomb = function(order) {
+			numAlive = numAlive -1;
+			players[order].alive = false;
+			console.log('Game ' + gameId + " : " + players[order].userName + " is dead by voting");
+			if (order != 0 ) {
+				if (players[order - 1].alive) {
+					players[order - 1].alive = false;
+					socket.emit("playerDiedByMad",players[order-1].userId);
+			    	socket.broadcast.emit("playerDiedByMad",players[order-1].userId);
+
+				}
+			}
+			if (order != maxPlayer-1) {
+				if (players[order +1].alive) {
+					players[order +1].alive = false;
+					socket.emit("playerDiedByMad",players[order-1].userId);
+			    	socket.broadcast.emit("playerDiedByMad",players[order-1].userId);
+				}
+			}
+
+			if (numAlive < 2 || isGameOver()) {
+			    gameOver();
+			}else{
+				state = STATE_VOTE_RESULT;
+				socket.emit('stateChanged',state,60);
+				socket.broadcast.emit('stateChanged',state,60);
+			    socket.emit("playerDiedByVotes",players[order].userId);
+			    socket.broadcast.emit("playerDiedByVotes",players[order].userId);
+			    nightStart();
 			}
 		}
 
@@ -370,8 +419,10 @@ exports.createSocket = function(con,game,gamesSocket){
 		    socket.emit('stateChanged',state,60);
 		    socket.broadcast.emit('stateChanged',state,60);
 		    votes = [];
+		    playersVotes = [];
 		    for (var i = 0; i < players.length; i++) {
 		    	votes[i] = 0;
+		    	playersVotes[i] = false;
 		    }
 		    await utils.mySleep(TIME_VOTE);
 		    voteResult();
@@ -382,11 +433,16 @@ exports.createSocket = function(con,game,gamesSocket){
 			await utils.mySleep(TIME_VOTE_RESULT);
 			nightEvents = [];
 			playerStates = [];
+			wolfVotes = [];
+			playersEvents = [];
+
 		    for (var i = 0; i < players.length; i++) {
+		    	playersEvents[i] = false;
 		    	if (players[i].alive) {
-		    		playerStates.push({order:i, id:players[i].userId, hasAttWar:false, hasHeaDoc:false,
+		    		playerStates.push({order:i, id:players[i].userId, role:players[i].role, hasAttWar:false, hasHeaDoc:false,
 		    		hasSleHar:false, sleHarId:100, isKilled:false, huntedId:100, poisoned:false, isShot:false,
 		    		serialKilled:false});
+		    		wolfVotes[i] = 0;
 		    	}
 		    }
 		    
@@ -398,6 +454,22 @@ exports.createSocket = function(con,game,gamesSocket){
 
 		    await utils.mySleep(TIME_NIGHT);
 
+		    playersEvents = [];
+
+		    utils.getWolfVoted(juniorDied,wolfVotes,gameId,function(a){
+		    	if (a.vote1) {
+		    		if (a.vote2) {
+		    			playerStates[a.value1].hasAttWar = true;
+		    			playerStates[a.value2].hasAttWar = true;
+		    			console.log(wolfVotes);
+		    		}else{
+		    			playerStates[a.value1].hasAttWar = true;
+		    					    			console.log(wolfVotes);
+		    		}
+		    	}
+		    	juniorDied = false;
+		    });
+
 		    for (var i = 0; i < playerStates.length; i++) {
 		    	if (playerStates[i].serialKilled) {
 					playerStates[i].isKilled = true;
@@ -408,6 +480,8 @@ exports.createSocket = function(con,game,gamesSocket){
 			    	nightEvents.push({userId:players[idx].userId, userName:players[idx].userName, deadBy:"Gunner"});
 
 			    	checkHunter(i);
+			    	checkMadScientist(i);
+			    	checkJuniorWarewolf(i);
 		    	}else if (playerStates[i].isShot) {
 		    		playerStates[i].isKilled = true;
 			    	var idx = getPlayerOrder(players,playerStates[i].id);
@@ -417,6 +491,8 @@ exports.createSocket = function(con,game,gamesSocket){
 			    	nightEvents.push({userId:players[idx].userId, userName:players[idx].userName, deadBy:"Gunner"});
 
 			    	checkHunter(i);
+			    	checkMadScientist(i);
+			    	checkJuniorWarewolf(i);
 		    	}else if (playerStates[i].hasAttWar) {
 		    		// attacked by Warewolf
 		    		if (playerStates[i].hasHeaDoc) {
@@ -434,6 +510,8 @@ exports.createSocket = function(con,game,gamesSocket){
 			    			nightEvents.push({userId:players[idx].userId, userName:players[idx].userName, deadBy:"Warewolf"});
 
 			    			checkHunter(i);
+			    			checkMadScientist(i);
+			    			checkJuniorWarewolf(i);
 			    		}
 		    		}
 		    	}else{
@@ -450,7 +528,9 @@ exports.createSocket = function(con,game,gamesSocket){
 		    				nightEvents.push({userId:players[i].userId, userName:players[i].userName, 
 		    					deadBy:"Sleeping with warewolf",killed:true});
 
-							checkHunter(i);	    				
+							checkHunter(i);	
+							checkMadScientist(i);   
+							checkJuniorWarewolf(i); 				
 		    			}else if(playerStates[t].isKilled){
 		    				// harlot slept with a killed player
 		    				playerStates[i].isKilled = true;
@@ -460,7 +540,9 @@ exports.createSocket = function(con,game,gamesSocket){
 		    				nightEvents.push({userId:players[i].userId, userName:players[i].userName, 
 		    					deadBy:"Slept with killed player",killed:true});
 
-							checkHunter(i);			    			
+							checkHunter(i);			
+							checkMadScientist(i); 
+							checkJuniorWarewolf(i);   			
 						}
 		    		}else{
 		    			// player is not a harlot
@@ -474,6 +556,8 @@ exports.createSocket = function(con,game,gamesSocket){
 		    					deadBy:"Withs's poison",killed:true});
 
 							checkHunter(i);	
+							checkMadScientist(i);
+							checkJuniorWarewolf(i);
 		    			}
 		    		}
 		    	}
@@ -504,6 +588,58 @@ exports.createSocket = function(con,game,gamesSocket){
 				numAlive = numAlive -1;
 			 	players[idx2].alive = false;
 				nightEvents.push({userId:players[idx2].userId, userName:players[idx2].userName, deadBy:"Hunter"});
+				checkHunter(hi);
+				checkMadScientist(hi);
+				checkJuniorWarewolf(i);
+			}
+		}
+
+		const checkMadScientist = function(i){
+			if (playerStates[i].role == MAD_SCIENTIST) {
+				var a = -1;
+				var b = -1;
+				for (var j = 0; j < playerStates.length; j++) {
+					if (j<i) {
+						if (!playerStates[j].isKilled) {
+							a = j;
+						}
+					}else if (i<j) {
+						if (!playerStates[j].isKilled) {
+							b = j;
+							break;
+						}
+					}
+				}
+				if (a != -1) {
+					playerStates[a].isKilled = true;
+					var idx2 = getPlayerOrder(players,playerStates[a].id);
+					console.log('Game ' + gameId + " : " + players[idx2].userName + " : is dead ");
+					numAlive = numAlive -1;
+				 	players[idx2].alive = false;
+					nightEvents.push({userId:players[idx2].userId, userName:players[idx2].userName, deadBy:"Hunter"});
+					checkHunter(a);
+					checkMadScientist(a);
+					checkJuniorWarewolf(i);
+				}
+				if (b != -1) {
+					playerStates[a].isKilled = true;
+					var idx2 = getPlayerOrder(players,playerStates[a].id);
+					console.log('Game ' + gameId + " : " + players[idx2].userName + " : is dead ");
+					numAlive = numAlive -1;
+				 	players[idx2].alive = false;
+					nightEvents.push({userId:players[idx2].userId, userName:players[idx2].userName, deadBy:"Hunter"});
+					checkHunter(a);
+					checkMadScientist(a);
+					checkJuniorWarewolf(i);
+				}
+			}
+		}
+
+		const checkJuniorWarewolf = function(i){
+			if (playerStates[i].role == JUNIOR_WAREWOLF) {
+				juniorDied = true;
+				socket.emit('juniorDied');
+				socket.broadcast.emit('juniorDied');
 			}
 		}
 
@@ -574,40 +710,52 @@ exports.createSocket = function(con,game,gamesSocket){
 			socket.emit("gameOver",obj);
 		    socket.broadcast.emit("gameOver",obj);
 		    api.finishGame(con,gameId,function(){
-		    	console.log('Game ' + gameId + ' : finished    The ' + TEAMS_NAME[winTeam] + " won");
+		    	if (numAlive == 0) {
+		    		console.log('Game ' + gameId + ' : finished    Everyone is dead');	
+		    	}else {
+		    		console.log('Game ' + gameId + ' : finished    The ' + TEAMS_NAME[winTeam] + " won");	
+		    	}
+		    	
 		    });
 		}
 
 		socket.on('hunterHunt', function(hunterId, targetId) {
 			playerStates[getPlayerOrder(players, hunterId)].huntedId = targetId;
+			playersEvents[getPlayerOrder(players, hunterIds)] = true;
 		});
 
 		socket.on('witchExir', function(witchId) {
 			exirUsed = true;
 			witches[getCharOrder(witches, witchId)-1].usedExir = true;
+			playersEvents[getPlayerOrder(players, witchId)] = true;
 		});
 
 		socket.on('witchPoison', function(witchId, targetId) {
 			playerStates[getPlayerOrder(players, targetId)].poisoned = true;
 			witches[getCharOrder(witches, witchId)-1].usedPoison = true;
+			playersEvents[getPlayerOrder(players, witchId)] = true;
 		});
 
 		socket.on('harlotSleep', function(harlotId ,targetId) {
 			playerStates[getPlayerOrder(players, targetId)].hasSleHar = true;
 			playerStates[getPlayerOrder(players, harlotId)].sleHarId = targetId;
+			playersEvents[getPlayerOrder(players, harlotId)] = true;
 		});
 
 		socket.on('doctorHeal', function(doctorId, targetId) {
 			playerStates[getPlayerOrder(players, targetId)].hasHeaDoc = true;
 			doctors[getCharOrder(doctors, doctorId)-1].lastTarget = targetId;
+			playersEvents[getPlayerOrder(players, doctorId)] = true;
 		});
 
 		socket.on('doctorSkip', function(doctorId) {
 			doctors[getCharOrder(doctors, doctorId)-1].lastTarget = -1;
+			playersEvents[getPlayerOrder(players, doctorId)] = true;
 		});
 
 		socket.on('warewolfKill', function(warewolfId, targetId){
-			playerStates[getPlayerOrder(players, targetId)].hasAttWar = true;
+			wolfVotes[getPlayerOrder(players, targetId)] = wolfVotes[getPlayerOrder(players, targetId)] + 1;
+			playersEvents[getPlayerOrder(players, warewolfId)] = true;
 		});
 
 		socket.on('warewolfConvert', function(warewolfId, targetId){
@@ -615,19 +763,23 @@ exports.createSocket = function(con,game,gamesSocket){
 			socket.emit('convertedtoWolf',targetId);
 			socket.broadcast.emit('convertedtoWolf',targetId);
 			convertedtoAlpha = targetId;
+			playersEvents[getPlayerOrder(players, warewolfId)] = true;
 		});
 
 		socket.on('serialKill', function(killerId, targetId){
 			playerStates[getPlayerOrder(players, targetId)].serialKilled = true;
+			playersEvents[getPlayerOrder(players, killerId)] = true;
 		});
 
 		socket.on('revealMayor', function(mayorId){
-			var may = mayors[getCharOrder(mayors, mayorId)-1];
+			var may = mayors[getCharOrder(mayors, mayorId)];
 			if (!may.isRevealed) {
 				socket.emit('revealPlayer',{id:may.id, name:may.userName, role:MAYOR});
 				socket.broadcast.emit('revealPlayer',{id:may.id, name:may.userName, role:MAYOR});
 				may.isRevealed = true;
-			}		
+			}
+			players[getPlayerOrder(players, mayorId)].revealed = true;
+			playersEvents[getPlayerOrder(players, mayorId)] = true;
 		});
 
 		socket.on('gunnerShoot', function(gunnerId, targetId){
@@ -642,11 +794,14 @@ exports.createSocket = function(con,game,gamesSocket){
 				gunn.isRevealed = true;
 			}
 			gunn.numBullets = gunn.numBullets -1;
+			players[getPlayerOrder(players, gunnerId)].revealed = true;
+			playersEvents[getPlayerOrder(players, gunnerId)] = true;
 		});
 
 		socket.on('vote', function(userId,userNickname,selectedOrder){
 			//console.log(userNickname + " voted to kill : " + players[selectedOrder].userName);
 			votes[selectedOrder] = votes[selectedOrder] + 1;
+			playersVotes[selectedOrder] = true;
 		});
 
 		socket.on('messagedetection', (senderNickname,messageContent,senderId) => {

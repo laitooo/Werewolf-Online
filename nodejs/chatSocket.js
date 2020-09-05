@@ -4,8 +4,7 @@ var moment = require('moment');
 
 
 
-exports.createSocket = function(con,id){
-
+exports.createSocket = function(con,id,nsp3){
 	var nsp = io.of('/chats/chat' + id);
 	//console.log('chat socket created  with id : ' + id);
 
@@ -31,6 +30,21 @@ exports.createSocket = function(con,id){
 		    		socket.broadcast.emit('message', {id:idMessage, idsender:senderId, content:messageContent, time:messageTime});
 				});
 			});
+
+		socket.on('unfriend', function(id1,id2,name1,name2) {
+			api.unfriend(con,
+				{id1:id1,id2:id2,name1:name1,name2},
+				function(error){
+					if (!error) {
+						console.log(name1 + " and " + name2 + " are no longer friends");
+						socket.emit("unfriended",{id1:id1, id2:id2});
+						socket.broadcast.emit("unfriended",{id1:id1, id2:id2});
+						nsp3.emit("deleteChat",{id1:id1, id2:id2});
+					}else {
+						console.log(name1 + " and " + name2 + " are not even friends");
+					}
+				});
+		});
 
 		socket.on('disconnect', function() {
 		    //console.log('some user' +' has left ')
