@@ -1,0 +1,43 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.3"
+    defaultConfig {
+        applicationId "zxc.laitooo.warewolfonline"
+        minSdkVersion 15
+        targetSdkVersion 24
+        versionCode 155
+        versionName "0.2.7"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    //noinspection GradleCompatible
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    //noinspection GradleCompatible
+    compile 'com.android.support:design:25.3.1'
+    //noinspection GradleCompatible
+    //compile 'com.android.support:exifinterface:27.1.1'
+    compile('io.socket:socket.io-client:1.0.0') {
+        exclude group: 'org.json', module: 'json'
+    }
+    //compile 'com.github.yalantis:ucrop:2.2.3'
+    compile files('libs/picasso-2.5.2.jar')
+    compile 'de.hdodenhof:circleimageview:3.0.0'
+    compile 'com.romandanylyk:pageindicatorview:1.0.2'
+    compile files('libs/volley-1.0.0.jar')
+    //compile 'com.mesibo.api:mesibo:1.0.97'
+    //compile 'com.mesibo.api:ui:1.1.39'
+    //compile 'com.mesibo.api:calls:1.0.87'
+    //compile 'android.arch.lifecycle:extensions:1.1.1'
+}
