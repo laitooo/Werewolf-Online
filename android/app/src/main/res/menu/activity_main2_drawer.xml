@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/rules"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Game Rules" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/review"
+                android:title="Write a review"
+                android:icon="@drawable/dead"/>
+            <item
+                android:id="@+id/contact"
+                android:icon="@android:drawable/ic_dialog_email"
+                android:title="Contact with us" />
+            <item
+                android:id="@+id/logout"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Log out" />
+        </menu>
+    </item>
+
+</menu>
