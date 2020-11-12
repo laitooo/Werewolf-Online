@@ -58,7 +58,7 @@ app.post('/addUser', function(req, res) {
 
 app.post('/isUser', function(req,res) {
 	//console.log(req.body);
-	api.userExists(con,req.body.email,req.body.username,function(result){
+	api.userExists(con,req.body.email,function(result){
 		if(result.length == 1){
 			if (result[0].password == req.body.password) {
 				console.log(req.body.username + ' : logged in');
