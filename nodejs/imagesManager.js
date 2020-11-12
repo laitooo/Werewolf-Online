@@ -8,8 +8,10 @@ const upload = multer({
   }
 });
 */
+const num_images = 10;
+
 exports.randomProfile = function (idUser,userName,callback) {
-	var num = Math.floor(Math.random() * 10) + 1;
+	var num = Math.floor(Math.random() * num_images) + 1;
 	fs.readFile('./public/icons/icon' + num + '.png' , function (err, data) {
 	    if (err) throw err;
 	    fs.writeFile('./public/images/image' + idUser + '.png', data, function (err) {
